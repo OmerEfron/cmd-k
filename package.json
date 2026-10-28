@@ -1,0 +1,155 @@
+{
+  "name": "quickk",
+  "displayName": "QuickK",
+  "description": "Cmd+K for AI edits, code generation and terminal commands. No agent, no chat panel.",
+  "version": "0.1.0",
+  "publisher": "quickk",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.93.0"
+  },
+  "categories": [
+    "AI",
+    "Other"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [],
+  "enabledApiProposals": [
+    "editorInsets"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": false,
+      "description": "QuickK sends code to an AI provider and writes commands into the terminal, so it needs a trusted workspace."
+    }
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "quickk.editor",
+        "title": "QuickK: Edit Selection or Generate Code"
+      },
+      {
+        "command": "quickk.terminal",
+        "title": "QuickK: Generate Terminal Command"
+      },
+      {
+        "command": "quickk.accept",
+        "title": "QuickK: Accept Proposed Change"
+      },
+      {
+        "command": "quickk.reject",
+        "title": "QuickK: Reject Proposed Change"
+      },
+      {
+        "command": "quickk.cancel",
+        "title": "QuickK: Stop Generating"
+      },
+      {
+        "command": "quickk.setApiKey",
+        "title": "QuickK: Set API Key"
+      },
+      {
+        "command": "quickk.clearApiKey",
+        "title": "QuickK: Clear API Key"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "quickk.editor",
+        "key": "ctrl+k",
+        "mac": "cmd+k",
+        "when": "editorTextFocus && !terminalFocus"
+      },
+      {
+        "command": "quickk.terminal",
+        "key": "ctrl+k",
+        "mac": "cmd+k",
+        "when": "terminalFocus"
+      },
+      {
+        "command": "quickk.accept",
+        "key": "ctrl+enter",
+        "mac": "cmd+enter",
+        "when": "editorTextFocus && quickk.pending"
+      },
+      {
+        "command": "quickk.reject",
+        "key": "ctrl+backspace",
+        "mac": "cmd+backspace",
+        "when": "editorTextFocus && quickk.pending"
+      },
+      {
+        "command": "quickk.cancel",
+        "key": "escape",
+        "when": "editorTextFocus && quickk.generating"
+      }
+    ],
+    "configuration": {
+      "title": "QuickK",
+      "properties": {
+        "quickk.baseUrl": {
+          "type": "string",
+          "default": "https://api.openai.com/v1",
+          "markdownDescription": "Base URL of an OpenAI-compatible API. QuickK calls `<baseUrl>/chat/completions`."
+        },
+        "quickk.model": {
+          "type": "string",
+          "default": "gpt-4o-mini",
+          "description": "Model name sent to the API."
+        },
+        "quickk.maxTokens": {
+          "type": "number",
+          "default": 2048,
+          "minimum": 16,
+          "description": "Maximum number of output tokens."
+        },
+        "quickk.temperature": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "default": 0.2,
+          "markdownDescription": "Sampling temperature. Set to `null` to not send it (some models only accept their default)."
+        },
+        "quickk.timeoutMs": {
+          "type": "number",
+          "default": 60000,
+          "minimum": 1000,
+          "description": "Request timeout in milliseconds."
+        },
+        "quickk.contextLines": {
+          "type": "number",
+          "default": 60,
+          "minimum": 0,
+          "description": "Number of lines before and after the selection that are sent as context."
+        },
+        "quickk.maxContextChars": {
+          "type": "number",
+          "default": 24000,
+          "minimum": 1000,
+          "description": "Maximum number of characters of surrounding code that are sent. The selection itself is always sent in full."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p . --noEmit && node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "package": "vsce package",
+    "pretest": "tsc -p . --outDir out",
+    "test:unit": "mocha \"out/test/unit/**/*.test.js\"",
+    "test:integration": "node out/test/runIntegration.js",
+    "test": "npm run test:unit"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.7",
+    "@types/node": "^18.19.0",
+    "@types/vscode": "^1.93.0",
+    "@vscode/test-electron": "^3.1.0",
+    "@vscode/vsce": "^3.0.0",
+    "esbuild": "^0.24.0",
+    "mocha": "^10.7.0",
+    "typescript": "^5.5.0"
+  }
+}

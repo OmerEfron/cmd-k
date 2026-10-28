@@ -1,0 +1,13 @@
+.env
+.env.*
+.vscode/**
+.vscode-test/**
+src/**
+test/**
+out/**
+node_modules/**
+PRD.md
+tsconfig.json
+esbuild.js
+**/*.map
+.gitignore
